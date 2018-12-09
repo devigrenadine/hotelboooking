@@ -52,20 +52,20 @@ public class BookingController {
 	}
 
 	@PostMapping(value = "/hotels/{hotel_id}/bookings")
-	public Booking createBooking(@PathVariable(value = "hotel_id") Long hotel_id, @Valid @RequestBody Booking booking) {
-		if (!hotelRepository.existsById(hotel_id)) {		
+	public Optional<Object> createBooking(@PathVariable(value = "hotel_id") Long hotel_id,
+			@Valid @RequestBody Booking booking) {
+		if (!hotelRepository.existsById(hotel_id)) {
 			Hotel newhotel = new Hotel();
 			newhotel.setId(hotel_id);
 			hotelRepository.save(newhotel);
-			booking.setHotel(newhotel);
-			return bookingRepository.save(booking);
 		}
-		else{return hotelRepository.findById(hotel_id).map(hotel -> {
-			booking.setHotel(hotel);
-			return bookingRepository.save(booking);
-		}).orElseThrow(() -> new ResourceNotFoundException("hotel_id " + hotel_id + " not found"));
-	}}
-	
+		{
+			return hotelRepository.findById(hotel_id).map(hotel -> {
+				booking.setHotel(hotel);
+				return bookingRepository.save(booking);
+			});
+		}
+	}
 
 	@PutMapping("/hotels/{hotel_id}/bookings/{booking_id}")
 	public Booking updateBooking(@PathVariable(value = "hotel_id") Long hotel_id,
@@ -73,7 +73,6 @@ public class BookingController {
 		if (!hotelRepository.existsById(hotel_id)) {
 			throw new ResourceNotFoundException("hotel_id " + hotel_id + " not found");
 		}
-
 		return bookingRepository.findById(booking_id).map(booking -> {
 			booking.setCustomerName(bookingRequest.getCustomerName());
 			booking.setCustomerSurname(bookingRequest.getCustomerSurname());
@@ -81,10 +80,10 @@ public class BookingController {
 			return bookingRepository.save(booking);
 		}).orElseThrow(() -> new ResourceNotFoundException("booking_id " + booking_id + "not found"));
 	}
-	
+
 	@GetMapping("/hotels/{hotel_id}/sum/{currency}")
-	public BigDecimal getAllPriceAmountsByHotelByCurrency(@PathVariable Long hotel_id, @PathVariable String currency) {	
-		return bookingRepository.getSumOfPriceAmountsByHotelId(hotel_id , currency);
+	public BigDecimal getAllPriceAmountsByHotelByCurrency(@PathVariable Long hotel_id, @PathVariable String currency) {
+		return bookingRepository.getSumOfPriceAmountsByHotelId(hotel_id, currency);
 	}
 
 	@DeleteMapping("/hotels/{hotel_id}/bookings/{booking_id}")

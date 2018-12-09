@@ -14,7 +14,7 @@
 	Steps
 	1. Download and install a database( mysql 8.0)
 	
-	2. From command line cd to HotelBooking to thrift-server 
+	2. From command line cd to HotelBooking 
 		and
 		 mvn clean install
 		 mvn spring-boot:run
@@ -27,8 +27,7 @@
 	  
     
     Testing
-    - Via postman (Please take a look on postman.txt where CRUD scenarios are provided)
-    
+    - Via postman (Please take a look on postmanTestData.md where CRUD scenarios are provided)
     - Via basic controller  Unit tests 
     
     

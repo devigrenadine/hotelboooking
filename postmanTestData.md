@@ -55,8 +55,7 @@
 		http://localhost:8080/hotels/bookings/politan
 	get price amount/booking/hotel
 	• Get the sum of the price amounts of the bookings for a given hotel
-	 	(http://localhost:8080/hotels/{hotel_id}/sum/{currency}	
-		Added 2nd parameter for currency so that sum makes sense)
-		 http://localhost:8080/hotels/2/sum/USD
+	 	(http://localhost:8080/hotels/{hotel_id}/sum/
+		 http://localhost:8080/hotels/2/sum/
 	
 

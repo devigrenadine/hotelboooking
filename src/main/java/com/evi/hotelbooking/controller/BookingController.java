@@ -23,12 +23,15 @@ import com.evi.hotelbooking.repository.HotelRepository;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.joda.money.CurrencyUnit;
+import org.joda.money.Money;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +39,9 @@ import org.slf4j.LoggerFactory;
 public class BookingController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BookingController.class);
+
+	private static final BigDecimal conversionRateUSDtoEUR = new BigDecimal(0.88);
+	private static final BigDecimal conversionRateGBPtoEUR = new BigDecimal(0.88);
 
 	@Autowired
 	private BookingRepository bookingRepository;
@@ -49,6 +55,26 @@ public class BookingController {
 	@GetMapping("/hotels/{hotel_id}/bookings")
 	public List<Booking> getAllBookingsByHotelId(@PathVariable(value = "hotel_id") Long hotel_id, Pageable pageable) {
 		return bookingRepository.findByhotel_id(hotel_id, pageable);
+	}
+
+	@GetMapping("/hotels/{hotel_id}/bookings/sum/")
+	public BigDecimal getSumPriceAmountsByHotel(@PathVariable Long hotel_id, Pageable pageable) {
+		List<Booking> bookings = getAllBookingsByHotelId(hotel_id, pageable);
+		BigDecimal sumAmount, euSum = new BigDecimal(0);
+		int usdSum = 0;
+		
+		for (Booking booking : bookings) {
+			if (booking.getCurrency().equals("USD")) {
+				Money convertedToEUR = booking.getMoney().convertedTo(CurrencyUnit.EUR, conversionRateUSDtoEUR,
+						RoundingMode.HALF_UP);
+				usdSum = usdSum + convertedToEUR.getAmountMajorInt();
+				
+			} else {
+				euSum = booking.getAmount().add(euSum);
+			}
+		}
+		sumAmount = new BigDecimal(usdSum).add(euSum);
+		return sumAmount;
 	}
 
 	@PostMapping(value = "/hotels/{hotel_id}/bookings")
@@ -79,11 +105,6 @@ public class BookingController {
 			booking.setNumberOfPax(bookingRequest.getNumberOfPax());
 			return bookingRepository.save(booking);
 		}).orElseThrow(() -> new ResourceNotFoundException("booking_id " + booking_id + "not found"));
-	}
-
-	@GetMapping("/hotels/{hotel_id}/sum/{currency}")
-	public BigDecimal getAllPriceAmountsByHotelByCurrency(@PathVariable Long hotel_id, @PathVariable String currency) {
-		return bookingRepository.getSumOfPriceAmountsByHotelId(hotel_id, currency);
 	}
 
 	@DeleteMapping("/hotels/{hotel_id}/bookings/{booking_id}")

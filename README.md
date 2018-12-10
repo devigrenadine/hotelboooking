@@ -12,7 +12,7 @@
 
 	 
 	Steps
-	1. Download and install a database( mysql 8.0)
+	1. Download and install a database( mysql 8.0)(
 	
 	2. From command line cd to HotelBooking to thrift-server 
 		and
@@ -39,7 +39,7 @@
        
        
        TECHNOLOGIES USED
-        Maven 
+        Maven 4.0
         Java 8
         Spring Boot 2.1
         Spring framework

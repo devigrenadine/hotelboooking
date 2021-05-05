@@ -12,7 +12,7 @@
 
 	 
 	Steps
-	1. Download and install a database( mysql 8.0)(
+	1. Download and install a database( mysql 8.0)
 	
 	2. From command line cd to HotelBooking 
 		and
